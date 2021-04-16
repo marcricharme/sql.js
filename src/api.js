@@ -852,19 +852,6 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
         this.functions = {};
     }
 
-    function CustomDatabase(filename) {
-        this.filename = filename;
-        const ret = sqlite3_open(this.filename, apiTemp);
-        this.db = getValue(apiTemp, "i32");
-        this.handleError(ret);
-        registerExtensionFunctions(this.db);
-        // A list of all prepared statements of the database
-        this.statements = {};
-        // A list of all user function of the database
-        // (created by create_function call)
-        this.functions = {};
-    }
-
     /** Execute an SQL query, ignoring the rows it returns.
     @param {string} sql a string containing some SQL text to execute
     @param {Statement.BindParams} [params] When the SQL statement contains
@@ -1372,4 +1359,8 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
       FS.root = null;
       FS.staticInit();
     }
+
+    Module["CustomDatabase"] = CustomDatabase;
+    Module["FS"] = FS;
+    CustomDatabase.prototype = Object.create(Database.prototype);
 };
