@@ -4,6 +4,7 @@
 "stackSave",
 "stackRestore",
 "UTF8ToString",
+"FS",
 "stringToUTF8",
 "lengthBytesUTF8",
 "ccall",

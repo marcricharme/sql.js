@@ -46,5 +46,7 @@
 "_sqlite3_malloc",
 "_sqlite3_vfs_find",
 "_register_for_idb",
+"_sqlite3_declare_vtab",
+"_sqlite3_malloc",
 "_RegisterExtensionFunctions"
 ]
