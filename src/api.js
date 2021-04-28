@@ -1147,7 +1147,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
             return null;
         }
         errmsg = sqlite3_errmsg(this.db);
-        throw new Error("SQLite: " + errmsg);
+        throw new Error("SQLite: " + (errmsg || "Code " + returnCode));
     };
 
     /** Returns the number of changed rows (modified, inserted or deleted)
@@ -1184,7 +1184,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
             try {
                 result = func.apply(null, args);
             } catch (error) {
-                sqlite3_result_error(cx, error, -1);
+                sqlite3_result_error(cx, "JS threw: " + error, -1);
                 return;
             }
             Module.set_return_value(cx, result);
@@ -1263,6 +1263,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
                 }
                 break;
             default:
+                console.warn("unknown sqlite result type: ", typeof result, result);
                 sqlite3_result_null(cx);
         }
     }
