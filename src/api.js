@@ -1363,5 +1363,9 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
       let fileInfo = filesInfo.find(f => f[1] === path);
       sqliteFiles.delete(fileInfo[0])
     }
->>>>>>> Implement changes required for IndexedDB-backed filesystem
+
+    Module["reset_filesystem"] = () => {
+      FS.root = null;
+      FS.staticInit();
+    }
 };
