@@ -830,8 +830,8 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
     * an SQLite database file or a path
     * @param {Object} opts Options to specify a filename
     */
-    function Database(data, { filename = false } = {}) {
-        if(filename === false) {
+    function Database(data, { filename = undefined } = {}) {
+        if(filename === undefined) {
           this.filename = "dbfile_" + (0xffffffff * Math.random() >>> 0);
           this.memoryFile = true;
           if (data != null) {
@@ -839,7 +839,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
           }
         }
         else {
-          this.filename = data;
+          this.filename = typeof filename === "string" ? filename : data;
         }
         const ret = sqlite3_open(this.filename, apiTemp);
         this.db = getValue(apiTemp, "i32");
@@ -1367,7 +1367,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
       FS.staticInit();
     }
 
-    Module["CustomDatabase"] = CustomDatabase;
+    //Module["CustomDatabase"] = CustomDatabase;
     Module["FS"] = FS;
-    CustomDatabase.prototype = Object.create(Database.prototype);
+    //CustomDatabase.prototype = Object.create(Database.prototype);
 };
