@@ -582,7 +582,7 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
    return null;
   }
   errmsg = sqlite3_errmsg(this.db);
-  throw new Error("SQLite: " + (errmsg || "") + ". Code " + returnCode);
+  throw new Error("SQLite: " + errmsg);
  };
  Database.prototype["getRowsModified"] = function getRowsModified() {
   return sqlite3_changes(this.db);
@@ -660,7 +660,6 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
    break;
 
   default:
-   console.warn("unknown sqlite result type: ", typeof result, result);
    sqlite3_result_null(cx);
   }
  };
@@ -700,15 +699,24 @@ Module["onRuntimeInitialized"] = function onRuntimeInitialized() {
    if (module_things[k] && ele[k]) {
     const fn = ele[k].bind(ele);
     var sig = Array(1 + fn.length).fill("i").join("");
-    tgt = addFunction(fn, sig);
+    if (false && k === "xFilter") {
+     tgt = addFunction((...args) => {
+      return Asyncify.handleAsync(async () => fn(...args));
+     }, sig);
+    } else {
+     tgt = addFunction(fn, sig);
+    }
     type = "*";
    }
+   console.log("adding at", i, k, tgt, sig);
    setValue(sqlite3_module + i * 4, tgt, type);
    i++;
   }
+  console.log(Module.HEAPU8.slice(sqlite3_module, sqlite3_module + i * 4));
   this.handleError(sqlite3_create_module_v2(this.db, ele.name, sqlite3_module, 0, 0));
  };
  Module.Database = Database;
+ Module["FS"] = FS;
  var sqliteFiles = new Map();
  Module["register_for_idb"] = (customFS => {
   var SQLITE_BUSY = 5;
@@ -5879,7 +5887,9 @@ if (!Object.getOwnPropertyDescriptor(Module, "registerFunctions")) Module["regis
  abort("'registerFunctions' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
-Module["addFunction"] = addFunction;
+if (!Object.getOwnPropertyDescriptor(Module, "addFunction")) Module["addFunction"] = function() {
+ abort("'addFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
 
 if (!Object.getOwnPropertyDescriptor(Module, "removeFunction")) Module["removeFunction"] = function() {
  abort("'removeFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
